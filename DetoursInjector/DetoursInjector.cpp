@@ -1,4 +1,5 @@
 ﻿// DetoursInjector.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
+// x86测试DetourD3D9 "D:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Samples\C++\Direct3D\Bin\x86\pick.exe" "E:\LinkSunPractice\OSD研究\DetoursSample\Debug\detourd3d9.dll"
 //
 
 #include <stdio.h>
@@ -27,8 +28,10 @@ BOOL Inject(TCHAR* exePath, char* dllPath)
 	STARTUPINFO sinfo{ 0 };
 	PROCESS_INFORMATION pinfo{ 0 };
 	sinfo.cb = sizeof(sinfo);
+	//return  DetourCreateProcessWithDllEx(NULL, exePath, NULL, NULL, FALSE, CREATE_DEFAULT_ERROR_MODE, NULL,
+	//	_dir, &sinfo, &pinfo, dllPath, (PDETOUR_CREATE_PROCESS_ROUTINEW)CreateProcess);
 	return  DetourCreateProcessWithDllEx(NULL, exePath, NULL, NULL, FALSE, CREATE_DEFAULT_ERROR_MODE, NULL,
-		_dir, &sinfo, &pinfo, dllPath, (PDETOUR_CREATE_PROCESS_ROUTINEW)CreateProcess);
+		_dir, &sinfo, &pinfo, dllPath, NULL);
 }
 
 int main(int argc, char* argv[])

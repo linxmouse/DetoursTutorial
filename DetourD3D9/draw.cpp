@@ -2,6 +2,9 @@
 #include "draw.h"
 #include "dllmain.h"
 
+static UINT wndWidth = 0;
+static UINT wndHeight = 0;
+
 WNDPROC OWndProc = NULL;
 static BOOL ImguiInitialized = FALSE;
 
@@ -13,11 +16,16 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	{
 		case WM_SIZE:
 		{
-			gWndWidth = LOWORD(lparam);
-			gWndHeight = HIWORD(lparam);
-			printf("width = %d, height = %d\n", gWndWidth, gWndHeight);
+			wndWidth = LOWORD(lparam);
+			wndHeight = HIWORD(lparam);
+			printf("width = %d, height = %d\n", wndWidth, wndHeight);
 			break;
 		}
+		case WM_DESTROY:
+			// 释放ImGui
+			ImGui_ImplWin32_Shutdown();
+			ImGui_ImplDX9_Shutdown();
+			ImGui::DestroyContext();
 		default:
 			break;
 	}
@@ -40,6 +48,14 @@ HRESULT WINAPI hkEndScense(IDirect3DDevice9* pdevice)
 		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO();
 		io.Fonts->GetGlyphRangesChineseSimplifiedCommon();
+		D3DDEVICE_CREATION_PARAMETERS dcp;
+		pdevice->GetCreationParameters(&dcp);
+		gHwnd = dcp.hFocusWindow;
+#ifdef _WIN64
+		OWndProc = (WNDPROC)SetWindowLongPtr(gHwnd, GWLP_WNDPROC, (LONG_PTR)WndProc);
+#else
+		OWndProc = (WNDPROC)SetWindowLongPtr(gHwnd, GWL_WNDPROC, (LONG_PTR)WndProc);
+#endif // _WIN64
 		ImGui_ImplWin32_Init(gHwnd);
 		ImguiInitialized = TRUE;
 	}
@@ -67,7 +83,7 @@ HRESULT WINAPI hkEndScense(IDirect3DDevice9* pdevice)
 	ImGui::Text("Hello World.");
 	ImVec2 wndSize = ImGui::GetWindowSize();
 	// 将窗口固定在右下角距边50
-	ImGui::SetWindowPos("MyIMGUI", ImVec2(gWndWidth - wndSize.x - 50, gWndHeight - wndSize.y - 50));
+	ImGui::SetWindowPos("MyIMGUI", ImVec2(wndWidth - wndSize.x - 50, wndHeight - wndSize.y - 50));
 	ImGui::End();
 
 	ImGui::ShowDemoWindow();

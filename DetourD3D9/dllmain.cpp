@@ -10,8 +10,6 @@ static int (WINAPI* RawEntryPoint)(VOID) = NULL;
 TEndScense TureEndScense = NULL;
 
 HWND gHwnd = NULL;
-UINT gWndWidth = 0;
-UINT gWndHeight = 0;
 
 int WINAPI hkEntryPoint()
 {
@@ -22,44 +20,51 @@ DWORD WINAPI MainThread(LPVOID arg)
 {
 	WaitForSingleObject(arg, INFINITE);
 
+	WNDCLASSEX wc{ 0 };
+	wc.cbSize = sizeof(wc);
+	wc.style = CS_OWNDC;
+	wc.lpfnWndProc = DefWindowProc;
+	wc.hInstance = GetModuleHandle(NULL);
+	wc.lpszClassName = _T("DummyWindow");
+	if (RegisterClassEx(&wc) == NULL) 
+	{
+		printf("注册DummyWindow失败，错误代码：%u\n", GetLastError());
+		return FALSE;
+	}
+	HWND hwnd = CreateWindowEx(WS_EX_APPWINDOW, wc.lpszClassName, _T(""), WS_OVERLAPPEDWINDOW,
+		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL,
+		wc.hInstance, NULL);
+	if (hwnd == NULL)
+	{
+		printf("创建DummyWindow失败，错误代码：%u\n", GetLastError());
+		return FALSE;
+	}
+	
 	IDirect3D9* pD3d = Direct3DCreate9(D3D_SDK_VERSION);
 	if (pD3d == NULL)
 	{
 		printf("Direct3DCreate9失败，错误代码：%u\n", GetLastError());
-		return 0;
-	}
-
-	gHwnd = GetMainHWnd(GetCurrentProcessId());
-	if (gHwnd == NULL)
-	{
-		printf("获取主窗口句柄失败，错误代码：%u\n", GetLastError());
 		return FALSE;
 	}
-#ifdef _WIN64
-	OriginProc = (WNDPROC)SetWindowLongPtr(RelationHwnd, GWLP_WNDPROC, (LONG_PTR)WndProc);
-#else
-	OWndProc = (WNDPROC)SetWindowLongPtr(gHwnd, GWL_WNDPROC, (LONG_PTR)WndProc);
-#endif // _WIN64
-	
+
 	D3DPRESENT_PARAMETERS dpp{ 0 };
-	dpp.hDeviceWindow = gHwnd;
-	dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
 	dpp.Windowed = TRUE;
+	dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
 	IDirect3DDevice9* pDevice;
-	HRESULT hr = pD3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, dpp.hDeviceWindow,
+	HRESULT hr = pD3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd,
 		D3DCREATE_SOFTWARE_VERTEXPROCESSING, &dpp, &pDevice);
 	if (FAILED(hr))
 	{
 		printf("pD3d->CreateDevice失败，错误代码：%u\n", GetLastError());
 		pD3d->Release();
+		DestroyWindow(hwnd);
 		return FALSE;
 	}
-	//printf("BackBufferWidth = %u, BackBufferHeight = %u\n", dpp.BackBufferWidth, dpp.BackBufferHeight);
-	gWndWidth = dpp.BackBufferWidth;
-	gWndHeight = dpp.BackBufferHeight;
 
 	void** pVtbl = *reinterpret_cast<void***>(pDevice);
+	pD3d->Release();
 	pDevice->Release();
+	DestroyWindow(hwnd);
 
 	// EndScene是IDirect3DDevice9第43个函数
 	TureEndScense = (TEndScense)pVtbl[42];
@@ -88,6 +93,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 		FILE* stream;
 		freopen_s(&stream, "CONIN$", "r", stdin);
 		freopen_s(&stream, "CONOUT$", "w", stdout);
+		freopen_s(&stream, "CONOUT$", "w", stderr);
 #endif // _DEBUG
 
 
@@ -112,11 +118,6 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 		}
 		DetourDetach(&(LPVOID&)TrueEntryPoint, hkEntryPoint);
 		DetourTransactionCommit();
-
-		// 释放ImGui
-		ImGui_ImplWin32_Shutdown();
-		ImGui_ImplDX9_Shutdown();
-		ImGui::DestroyContext();
 		break;
 	case DLL_THREAD_ATTACH:
 	case DLL_THREAD_DETACH:
