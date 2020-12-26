@@ -1,72 +1,8 @@
 ﻿// dllmain.cpp : 定义 DLL 应用程序的入口点。
 #include "pch.h"
 
-typedef IDirect3D9* (WINAPI* TDirect3DCreate9)(UINT SDKVersion);
-typedef HRESULT (WINAPI* TD3D11CreateDeviceAndSwapChain)(
-    __in_opt IDXGIAdapter* pAdapter,
-    D3D_DRIVER_TYPE DriverType,
-    HMODULE Software,
-    UINT Flags,
-    __in_ecount_opt(FeatureLevels) CONST D3D_FEATURE_LEVEL* pFeatureLevels,
-    UINT FeatureLevels,
-    UINT SDKVersion,
-    __in_opt CONST DXGI_SWAP_CHAIN_DESC* pSwapChainDesc,
-    __out_opt IDXGISwapChain** ppSwapChain,
-    __out_opt ID3D11Device** ppDevice,
-    __out_opt D3D_FEATURE_LEVEL* pFeatureLevel,
-    __out_opt ID3D11DeviceContext** ppImmediateContext);
-
 static int (WINAPI* TrueEntryPoint)() = NULL;
 static int (WINAPI* RawEntryPoint)() = NULL;
-
-TDirect3DCreate9 TrueDirect3DCreate9 = NULL;
-TD3D11CreateDeviceAndSwapChain TrueD3D11CreateDeviceAndSwapChain = NULL;
-PFN_D3D11_CREATE_DEVICE TrueD3D11CreateDevice = NULL;
-
-IDirect3D9* WINAPI hkDirect3DCreate9(UINT SDKVersion)
-{
-    printf("Direct3DCreate9 Detected\n");
-
-    return TrueDirect3DCreate9(SDKVersion);
-}
-
-HRESULT WINAPI hkD3D11CreateDevice(
-    __in_opt IDXGIAdapter* pAdapter,
-    D3D_DRIVER_TYPE DriverType,
-    HMODULE Software,
-    UINT Flags,
-    __in_ecount_opt(FeatureLevels) CONST D3D_FEATURE_LEVEL* pFeatureLevels,
-    UINT FeatureLevels,
-    UINT SDKVersion,
-    __out_opt ID3D11Device** ppDevice,
-    __out_opt D3D_FEATURE_LEVEL* pFeatureLevel,
-    __out_opt ID3D11DeviceContext** ppImmediateContext)
-{
-    printf("D3D11CreateDevice Detected\n");
-    return TrueD3D11CreateDevice(pAdapter, DriverType, Software, Flags, pFeatureLevels, FeatureLevels,
-        SDKVersion, ppDevice, pFeatureLevel, ppImmediateContext);
-}
-
-HRESULT WINAPI hkD3D11CreateDeviceAndSwapChain(
-    __in_opt IDXGIAdapter* pAdapter,
-    D3D_DRIVER_TYPE DriverType,
-    HMODULE Software,
-    UINT Flags,
-    __in_ecount_opt(FeatureLevels) CONST D3D_FEATURE_LEVEL* pFeatureLevels,
-    UINT FeatureLevels,
-    UINT SDKVersion,
-    __in_opt CONST DXGI_SWAP_CHAIN_DESC* pSwapChainDesc,
-    __out_opt IDXGISwapChain** ppSwapChain,
-    __out_opt ID3D11Device** ppDevice,
-    __out_opt D3D_FEATURE_LEVEL* pFeatureLevel,
-    __out_opt ID3D11DeviceContext** ppImmediateContext)
-{
-    printf("D3D11CreateDeviceAndSwapChain Detected\n");
-
-    return TrueD3D11CreateDeviceAndSwapChain(pAdapter, DriverType, Software, Flags, pFeatureLevels,
-        FeatureLevels, SDKVersion,
-        pSwapChainDesc, ppSwapChain, ppDevice, pFeatureLevel, ppImmediateContext);
-}
 
 int WINAPI hkEntryPoint()
 {
@@ -87,7 +23,7 @@ void DebugConsole()
 
 DWORD WINAPI Main(LPVOID arg)
 {
-    printf("Enter Main\n");
+    WaitForSingleObject(arg, INFINITE);
 
     HMODULE dx9 = NULL;
     HMODULE dx10 = NULL;
@@ -153,7 +89,6 @@ DWORD WINAPI Main(LPVOID arg)
         }
     }
 
-    printf("End Main\n");
     return TRUE;
 }
 
