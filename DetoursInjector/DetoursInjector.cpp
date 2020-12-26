@@ -28,10 +28,10 @@ BOOL Inject(TCHAR* exePath, char* dllPath)
 	STARTUPINFO sinfo{ 0 };
 	PROCESS_INFORMATION pinfo{ 0 };
 	sinfo.cb = sizeof(sinfo);
-	//return  DetourCreateProcessWithDllEx(NULL, exePath, NULL, NULL, FALSE, CREATE_DEFAULT_ERROR_MODE, NULL,
-	//	_dir, &sinfo, &pinfo, dllPath, (PDETOUR_CREATE_PROCESS_ROUTINEW)CreateProcess);
 	return  DetourCreateProcessWithDllEx(NULL, exePath, NULL, NULL, FALSE, CREATE_DEFAULT_ERROR_MODE, NULL,
-		_dir, &sinfo, &pinfo, dllPath, NULL);
+		_dir, &sinfo, &pinfo, dllPath, (PDETOUR_CREATE_PROCESS_ROUTINEW)CreateProcess);
+	//return  DetourCreateProcessWithDllEx(NULL, exePath, NULL, NULL, FALSE, CREATE_DEFAULT_ERROR_MODE, NULL,
+	//	_dir, &sinfo, &pinfo, dllPath, NULL);
 }
 
 int main(int argc, char* argv[])

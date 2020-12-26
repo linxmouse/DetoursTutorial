@@ -1,0 +1,229 @@
+判断窗口是否为全屏
+Windowed = ((GetWindowLongPtr(GetForegroundWindow(), GWL_STYLE) & WS_POPUP) != 0) ? false : true;
+
+虚表导出命令
+// /d1 reportSingleClassLayoutIDXGIDevice 
+// /d1 reportSingleClassLayoutID3D10Device 
+// /d1 reportSingleClassLayoutIDirect3DDevice9 
+// /d1 reportSingleClassLayoutID3D11Device 
+// /d1 reportSingleClassLayoutIDXGISwapChain
+//IDXGISwapChain
+//IDirect3DDevice9
+//ID3D10Device
+//ID3D11Device
+//ID3D11DeviceContext
+
+虚表
+class IDXGISwapChain	size(4) :
+> +-- -
+    | +-- - (base class IDXGIDeviceSubObject)
+	| | +-- - (base class IDXGIObject)
+	| | | +-- - (base class IUnknown)
+	| | | | {vfptr}
+| | | +-- -
+| | +-- -
+| +-- -
++-- -
+IDXGISwapChain::$vftable@:
+| &IDXGISwapChain_meta
+| 0
+ 0 | &IUnknown::QueryInterface
+ 1 | &IUnknown::AddRef
+ 2 | &IUnknown::Release
+ 3 | &IDXGIObject::SetPrivateData
+ 4 | &IDXGIObject::SetPrivateDataInterface
+ 5 | &IDXGIObject::GetPrivateData
+ 6 | &IDXGIObject::GetParent
+ 7 | &IDXGIDeviceSubObject::GetDevice
+ 8 | &IDXGISwapChain::Present
+ 9 | &IDXGISwapChain::GetBuffer
+10 | &IDXGISwapChain::SetFullscreenState
+11 | &IDXGISwapChain::GetFullscreenState
+12 | &IDXGISwapChain::GetDesc
+13 | &IDXGISwapChain::ResizeBuffers
+14 | &IDXGISwapChain::ResizeTarget
+15 | &IDXGISwapChain::GetContainingOutput
+16 | &IDXGISwapChain::GetFrameStatistics
+17 | &IDXGISwapChain::GetLastPresentCount
+
+
+class ID3D11Device	size(4):
+	+---
+ 	| +--- (base class IUnknown)
+ 	| | {vfptr}
+	| +---
+	+---
+ID3D11Device::$vftable@:
+	| &ID3D11Device_meta
+	|  0
+ 0	| &IUnknown::QueryInterface
+ 1	| &IUnknown::AddRef
+ 2	| &IUnknown::Release
+ 3	| &ID3D11Device::CreateBuffer
+ 4	| &ID3D11Device::CreateTexture1D
+ 5	| &ID3D11Device::CreateTexture2D
+ 6	| &ID3D11Device::CreateTexture3D
+ 7	| &ID3D11Device::CreateShaderResourceView
+ 8	| &ID3D11Device::CreateUnorderedAccessView
+ 9	| &ID3D11Device::CreateRenderTargetView
+10	| &ID3D11Device::CreateDepthStencilView
+11	| &ID3D11Device::CreateInputLayout
+12	| &ID3D11Device::CreateVertexShader
+13	| &ID3D11Device::CreateGeometryShader
+14	| &ID3D11Device::CreateGeometryShaderWithStreamOutput
+15	| &ID3D11Device::CreatePixelShader
+16	| &ID3D11Device::CreateHullShader
+17	| &ID3D11Device::CreateDomainShader
+18	| &ID3D11Device::CreateComputeShader
+19	| &ID3D11Device::CreateClassLinkage
+20	| &ID3D11Device::CreateBlendState
+21	| &ID3D11Device::CreateDepthStencilState
+22	| &ID3D11Device::CreateRasterizerState
+23	| &ID3D11Device::CreateSamplerState
+24	| &ID3D11Device::CreateQuery
+25	| &ID3D11Device::CreatePredicate
+26	| &ID3D11Device::CreateCounter
+27	| &ID3D11Device::CreateDeferredContext
+28	| &ID3D11Device::OpenSharedResource
+29	| &ID3D11Device::CheckFormatSupport
+30	| &ID3D11Device::CheckMultisampleQualityLevels
+31	| &ID3D11Device::CheckCounterInfo
+32	| &ID3D11Device::CheckCounter
+33	| &ID3D11Device::CheckFeatureSupport
+34	| &ID3D11Device::GetPrivateData
+35	| &ID3D11Device::SetPrivateData
+36	| &ID3D11Device::SetPrivateDataInterface
+37	| &ID3D11Device::GetFeatureLevel
+38	| &ID3D11Device::GetCreationFlags
+39	| &ID3D11Device::GetDeviceRemovedReason
+40	| &ID3D11Device::GetImmediateContext
+41	| &ID3D11Device::SetExceptionMode
+42	| &ID3D11Device::GetExceptionMode
+
+
+class ID3D11DeviceContext	size(4):
+	+---
+ 	| +--- (base class ID3D11DeviceChild)
+ 	| | +--- (base class IUnknown)
+ 	| | | {vfptr}
+	| | +---
+	| +---
+	+---
+ID3D11DeviceContext::$vftable@:
+	| &ID3D11DeviceContext_meta
+	|  0
+ 0	| &IUnknown::QueryInterface
+ 1	| &IUnknown::AddRef
+ 2	| &IUnknown::Release
+ 3	| &ID3D11DeviceChild::GetDevice
+ 4	| &ID3D11DeviceChild::GetPrivateData
+ 5	| &ID3D11DeviceChild::SetPrivateData
+ 6	| &ID3D11DeviceChild::SetPrivateDataInterface
+ 7	| &ID3D11DeviceContext::VSSetConstantBuffers
+ 8	| &ID3D11DeviceContext::PSSetShaderResources
+ 9	| &ID3D11DeviceContext::PSSetShader
+10	| &ID3D11DeviceContext::PSSetSamplers
+11	| &ID3D11DeviceContext::VSSetShader
+12	| &ID3D11DeviceContext::DrawIndexed
+13	| &ID3D11DeviceContext::Draw
+14	| &ID3D11DeviceContext::Map
+15	| &ID3D11DeviceContext::Unmap
+16	| &ID3D11DeviceContext::PSSetConstantBuffers
+17	| &ID3D11DeviceContext::IASetInputLayout
+18	| &ID3D11DeviceContext::IASetVertexBuffers
+19	| &ID3D11DeviceContext::IASetIndexBuffer
+20	| &ID3D11DeviceContext::DrawIndexedInstanced
+21	| &ID3D11DeviceContext::DrawInstanced
+22	| &ID3D11DeviceContext::GSSetConstantBuffers
+23	| &ID3D11DeviceContext::GSSetShader
+24	| &ID3D11DeviceContext::IASetPrimitiveTopology
+25	| &ID3D11DeviceContext::VSSetShaderResources
+26	| &ID3D11DeviceContext::VSSetSamplers
+27	| &ID3D11DeviceContext::Begin
+28	| &ID3D11DeviceContext::End
+29	| &ID3D11DeviceContext::GetData
+30	| &ID3D11DeviceContext::SetPredication
+31	| &ID3D11DeviceContext::GSSetShaderResources
+32	| &ID3D11DeviceContext::GSSetSamplers
+33	| &ID3D11DeviceContext::OMSetRenderTargets
+34	| &ID3D11DeviceContext::OMSetRenderTargetsAndUnorderedAccessViews
+35	| &ID3D11DeviceContext::OMSetBlendState
+36	| &ID3D11DeviceContext::OMSetDepthStencilState
+37	| &ID3D11DeviceContext::SOSetTargets
+38	| &ID3D11DeviceContext::DrawAuto
+39	| &ID3D11DeviceContext::DrawIndexedInstancedIndirect
+40	| &ID3D11DeviceContext::DrawInstancedIndirect
+41	| &ID3D11DeviceContext::Dispatch
+42	| &ID3D11DeviceContext::DispatchIndirect
+43	| &ID3D11DeviceContext::RSSetState
+44	| &ID3D11DeviceContext::RSSetViewports
+45	| &ID3D11DeviceContext::RSSetScissorRects
+46	| &ID3D11DeviceContext::CopySubresourceRegion
+47	| &ID3D11DeviceContext::CopyResource
+48	| &ID3D11DeviceContext::UpdateSubresource
+49	| &ID3D11DeviceContext::CopyStructureCount
+50	| &ID3D11DeviceContext::ClearRenderTargetView
+51	| &ID3D11DeviceContext::ClearUnorderedAccessViewUint
+52	| &ID3D11DeviceContext::ClearUnorderedAccessViewFloat
+53	| &ID3D11DeviceContext::ClearDepthStencilView
+54	| &ID3D11DeviceContext::GenerateMips
+55	| &ID3D11DeviceContext::SetResourceMinLOD
+56	| &ID3D11DeviceContext::GetResourceMinLOD
+57	| &ID3D11DeviceContext::ResolveSubresource
+58	| &ID3D11DeviceContext::ExecuteCommandList
+59	| &ID3D11DeviceContext::HSSetShaderResources
+60	| &ID3D11DeviceContext::HSSetShader
+61	| &ID3D11DeviceContext::HSSetSamplers
+62	| &ID3D11DeviceContext::HSSetConstantBuffers
+63	| &ID3D11DeviceContext::DSSetShaderResources
+64	| &ID3D11DeviceContext::DSSetShader
+65	| &ID3D11DeviceContext::DSSetSamplers
+66	| &ID3D11DeviceContext::DSSetConstantBuffers
+67	| &ID3D11DeviceContext::CSSetShaderResources
+68	| &ID3D11DeviceContext::CSSetUnorderedAccessViews
+69	| &ID3D11DeviceContext::CSSetShader
+70	| &ID3D11DeviceContext::CSSetSamplers
+71	| &ID3D11DeviceContext::CSSetConstantBuffers
+72	| &ID3D11DeviceContext::VSGetConstantBuffers
+73	| &ID3D11DeviceContext::PSGetShaderResources
+74	| &ID3D11DeviceContext::PSGetShader
+75	| &ID3D11DeviceContext::PSGetSamplers
+76	| &ID3D11DeviceContext::VSGetShader
+77	| &ID3D11DeviceContext::PSGetConstantBuffers
+78	| &ID3D11DeviceContext::IAGetInputLayout
+79	| &ID3D11DeviceContext::IAGetVertexBuffers
+80	| &ID3D11DeviceContext::IAGetIndexBuffer
+81	| &ID3D11DeviceContext::GSGetConstantBuffers
+82	| &ID3D11DeviceContext::GSGetShader
+83	| &ID3D11DeviceContext::IAGetPrimitiveTopology
+84	| &ID3D11DeviceContext::VSGetShaderResources
+85	| &ID3D11DeviceContext::VSGetSamplers
+86	| &ID3D11DeviceContext::GetPredication
+87	| &ID3D11DeviceContext::GSGetShaderResources
+88	| &ID3D11DeviceContext::GSGetSamplers
+89	| &ID3D11DeviceContext::OMGetRenderTargets
+90	| &ID3D11DeviceContext::OMGetRenderTargetsAndUnorderedAccessViews
+91	| &ID3D11DeviceContext::OMGetBlendState
+92	| &ID3D11DeviceContext::OMGetDepthStencilState
+93	| &ID3D11DeviceContext::SOGetTargets
+94	| &ID3D11DeviceContext::RSGetState
+95	| &ID3D11DeviceContext::RSGetViewports
+96	| &ID3D11DeviceContext::RSGetScissorRects
+97	| &ID3D11DeviceContext::HSGetShaderResources
+98	| &ID3D11DeviceContext::HSGetShader
+99	| &ID3D11DeviceContext::HSGetSamplers
+100	| &ID3D11DeviceContext::HSGetConstantBuffers
+101	| &ID3D11DeviceContext::DSGetShaderResources
+102	| &ID3D11DeviceContext::DSGetShader
+103	| &ID3D11DeviceContext::DSGetSamplers
+104	| &ID3D11DeviceContext::DSGetConstantBuffers
+105	| &ID3D11DeviceContext::CSGetShaderResources
+106	| &ID3D11DeviceContext::CSGetUnorderedAccessViews
+107	| &ID3D11DeviceContext::CSGetShader
+108	| &ID3D11DeviceContext::CSGetSamplers
+109	| &ID3D11DeviceContext::CSGetConstantBuffers
+110	| &ID3D11DeviceContext::ClearState
+111	| &ID3D11DeviceContext::Flush
+112	| &ID3D11DeviceContext::GetType
+113	| &ID3D11DeviceContext::GetContextFlags
+114	| &ID3D11DeviceContext::FinishCommandList

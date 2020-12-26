@@ -2,9 +2,19 @@
 #include "pch.h"
 #include "wnd.h"
 
-typedef HRESULT(__stdcall* TPresent)(IDXGISwapChain* pSwapChain, UINT syncInterval, UINT flags);
-typedef HRESULT(__stdcall* TResizeBuffers)(IDXGISwapChain* pSwapChain, UINT BufferCount, UINT Width, UINT Height, DXGI_FORMAT NewFormat, UINT SwapChainFlags);
-extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+typedef HRESULT(STDMETHODCALLTYPE* PF_Present)(
+	IDXGISwapChain* pSwapChain, 
+	UINT syncInterval, UINT flags);
+//typedef HRESULT(STDMETHODCALLTYPE* PF_ResizeBuffers)(
+//	IDXGISwapChain* pSwapChain, 
+//	UINT BufferCount, 
+//	UINT Width, UINT Height, 
+//	DXGI_FORMAT NewFormat, 
+//	UINT SwapChainFlags);
+//typedef HRESULT (STDMETHODCALLTYPE* PF_GetDevice)(REFIID riid, void** ppDevice);
+//typedef ULONG(STDMETHODCALLTYPE* PF_Release)(IDXGISwapChain* pSwapChain);
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
+	HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 HWND gHwnd;
 static BOOL bInitialized = FALSE;
@@ -15,12 +25,15 @@ static ID3D11DeviceContext* pDeviceContext;
 static int (WINAPI* TrueEntryPoint)(VOID) = NULL;
 static int (WINAPI* RawEntryPoint)(VOID) = NULL;
 
-TPresent TruePresent = NULL;
-TResizeBuffers TrueResizeBuffers = NULL;
+//PF_Release TrueRelease = NULL;
+//PF_GetDevice TrueGetDevice = NULL;
+PF_Present TruePresent = NULL;
+//PF_ResizeBuffers TrueResizeBuffers = NULL;
+
 WNDPROC OWndProc = NULL;
 
 int WINAPI hkEntryPoint()
-{
+{	
 	return TrueEntryPoint();
 }
 
@@ -35,18 +48,18 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			printf("width = %d, height = %d\n", wndWidth, wndHeight);
 			break;
 		}
+		case WM_STYLECHANGED:
+			break;
 		case WM_DESTROY:
 			// 释放ImGui
 			ImGui_ImplWin32_Shutdown();
 			ImGui_ImplDX11_Shutdown();
 			ImGui::DestroyContext();
 
-			// 释放DirectX Device
-			pDeviceContext->Release();
-			pDevice->Release();
+			// 释放设备
+			if (pDeviceContext) pDeviceContext->Release();
+			if (pDevice) pDevice->Release();
 			pSwapChain->Release();
-			break;
-		default:
 			break;
 	}
 
@@ -58,41 +71,45 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	return CallWindowProc(OWndProc, hwnd, msg, wparam, lparam);
 }
 
-HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
+//HRESULT STDMETHODCALLTYPE hkGetDevice(REFIID riid, void** ppDevice)
+//{
+//	return TrueGetDevice(riid, &(*ppDevice));
+//}
+
+//ULONG STDMETHODCALLTYPE hkRelease(IDXGISwapChain* pSwapChain)
+//{
+//	return TrueRelease(pSwapChain);
+//}
+
+HRESULT STDMETHODCALLTYPE hkPresent(IDXGISwapChain* lpSwapChain, UINT SyncInterval, UINT Flags)
 {
+	pSwapChain = lpSwapChain;
+	HRESULT hr = lpSwapChain->GetDevice(__uuidof(ID3D11Device), (LPVOID*)&pDevice);
+	if (FAILED(hr)) return TruePresent(lpSwapChain, SyncInterval, Flags);
+	pDevice->GetImmediateContext(&pDeviceContext);
+	
 	if (!bInitialized)
 	{
-		::pSwapChain = pSwapChain;
-		HRESULT hr = pSwapChain->GetDevice(__uuidof(ID3D11Device), (LPVOID*)&pDevice);
-		if (SUCCEEDED(hr))
-		{
-			pDevice->GetImmediateContext(&pDeviceContext);
-		}
-		else
-		{
-			printf("GetDevice失败，错误代码：%u\n", GetLastError());
-			return TruePresent(pSwapChain, SyncInterval, Flags);
-		}
-
 		DXGI_SWAP_CHAIN_DESC sd;
-		pSwapChain->GetDesc(&sd);
+		lpSwapChain->GetDesc(&sd);
 		gHwnd = sd.OutputWindow;
-		
-		ImGui::CreateContext();
-		ImGuiIO& io = ImGui::GetIO();
 
 #ifdef _WIN64
 		OWndProc = (WNDPROC)SetWindowLongPtr(gHwnd, GWLP_WNDPROC, (LONG_PTR)WndProc);
 #else
 		OWndProc = (WNDPROC)SetWindowLongPtr(gHwnd, GWL_WNDPROC, (LONG_PTR)WndProc);
 #endif // _WIN64
+		
+		ImGui::CreateContext();
+		//ImGuiIO& io = ImGui::GetIO();
 
 		ImGui_ImplWin32_Init(gHwnd);
-		ImGui_ImplDX11_Init(pDevice, pDeviceContext);
+		//ImGui_ImplDX11_Init(pDevice, pDeviceContext);
 
 		bInitialized = TRUE;
 	}
 
+	ImGui_ImplDX11_Init(pDevice, pDeviceContext);
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
@@ -101,18 +118,30 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+	
+	// 释放
+	ImGui_ImplDX11_Shutdown();
+	pDeviceContext->Release();
+	pDeviceContext = NULL;
+	pDevice->Release();
+	pDevice = NULL;
+	if (pSwapChain != lpSwapChain) 
+	{ 
+		pSwapChain->Release(); 
+		pSwapChain = lpSwapChain;
+	}
 
-	return TruePresent(pSwapChain, SyncInterval, Flags);
+	return TruePresent(lpSwapChain, SyncInterval, Flags);
 }
 
-HRESULT __stdcall hkResizeBuffers(IDXGISwapChain* pSwapChain, UINT BufferCount, 
-	UINT Width, UINT Height, DXGI_FORMAT NewFormat, UINT SwapChainFlags)
-{
-	// to deal with 'the direct3d device has a non-zero reference count'
-	ImGui_ImplDX11_InvalidateDeviceObjects();
-
-	return TrueResizeBuffers(pSwapChain, BufferCount, Width, Height, NewFormat, SwapChainFlags);
-}
+//HRESULT STDMETHODCALLTYPE hkResizeBuffers(IDXGISwapChain* pSwapChain, UINT BufferCount,
+//	UINT Width, UINT Height, DXGI_FORMAT NewFormat, UINT SwapChainFlags)
+//{
+//	// to deal with 'the direct3d device has a non-zero reference count'
+//	ImGui_ImplDX11_InvalidateDeviceObjects();
+//
+//	return TrueResizeBuffers(pSwapChain, BufferCount, Width, Height, NewFormat, SwapChainFlags);
+//}
 
 DWORD WINAPI MainThread(LPVOID arg)
 {
@@ -166,10 +195,17 @@ DWORD WINAPI MainThread(LPVOID arg)
 		return FALSE;
 	}
 
+	// F12查看定义
+	//swapChain->GetDevice
+	//swapChain->ResizeTarget
+	//swapChain->Release
+
 	void** pSwapChainVtbl = *reinterpret_cast<void***>(swapChain);
-	TruePresent = (TPresent)pSwapChainVtbl[8];
-	TrueResizeBuffers = (TResizeBuffers)pSwapChainVtbl[13];
-	deviceContext->ClearState();
+	//TrueRelease = (PF_Release)pSwapChainVtbl[2];
+	//TrueGetDevice = (PF_GetDevice)pSwapChainVtbl[7];
+	TruePresent = (PF_Present)pSwapChainVtbl[8];
+	//TrueResizeBuffers = (PF_ResizeBuffers)pSwapChainVtbl[13];
+
 	deviceContext->Release();
 	swapChain->Release();
 	device->Release();
@@ -177,8 +213,10 @@ DWORD WINAPI MainThread(LPVOID arg)
 
 	DetourTransactionBegin();
 	DetourUpdateThread(GetCurrentThread());
+	//DetourAttach(&(LPVOID&)TrueRelease, hkRelease);
+	//DetourAttach(&(LPVOID&)TrueGetDevice, hkGetDevice);
 	DetourAttach(&(LPVOID&)TruePresent, hkPresent);
-	DetourAttach(&(LPVOID&)TrueResizeBuffers, hkResizeBuffers);
+	//DetourAttach(&(LPVOID&)TrueResizeBuffers, hkResizeBuffers);
 	DetourTransactionCommit();
 
 	return TRUE;
@@ -221,14 +259,10 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 	case DLL_PROCESS_DETACH:
 		DetourTransactionBegin();
 		DetourUpdateThread(GetCurrentThread());
-		if (TruePresent != NULL)
-		{
-			DetourDetach(&(LPVOID&)TruePresent, hkPresent);
-		}
-		if (TrueResizeBuffers != NULL)
-		{
-			DetourDetach(&(LPVOID&)TrueResizeBuffers, hkResizeBuffers);
-		}
+		//if (TrueRelease != NULL) DetourDetach(&(LPVOID&)TrueRelease, hkRelease);
+		//if (TrueGetDevice != NULL) DetourDetach(&(LPVOID&)TrueGetDevice, hkGetDevice);
+		if (TruePresent != NULL) DetourDetach(&(LPVOID&)TruePresent, hkPresent);
+		//if (TrueResizeBuffers != NULL) DetourDetach(&(LPVOID&)TrueResizeBuffers, hkResizeBuffers);
 		DetourDetach(&(LPVOID&)TrueEntryPoint, hkEntryPoint);
 		DetourTransactionCommit();
 		break;
