@@ -1,0 +1,48 @@
+﻿<Window x:Class="ChkDxVerGUI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ChkDxVerGUI"
+        xmlns:model="clr-namespace:ChkDxVerGUI.Model"
+        mc:Ignorable="d"
+        Icon="Assets/favicon.ico"
+        Title="ChkDxVerGUI" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid Margin="6">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="选择执行文件:" VerticalAlignment="Center"/>
+            <TextBox Grid.Column="1" Text="{Binding ProcessPath}" Margin="6 0" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                <Button Content="浏览..." Command="{Binding ViewCommand}" Margin="0 0 6 0" VerticalAlignment="Center"></Button>
+                <Button Content="检测" Command="{Binding ChkCommand}" VerticalAlignment="Center"></Button>
+            </StackPanel>
+        </Grid>
+        <ListBox Grid.Row="1" ItemsSource="{Binding ChkDxs}">
+            <ListBox.ItemTemplate>
+                <DataTemplate DataType="model:ChkDxModel">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding ProcessName}" Background="LightGreen" Margin="6 0"/>
+                        <TextBlock Grid.Column="1" Text="{Binding DxVer}"/>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <StackPanel Grid.Row="2" Margin="6" Orientation="Horizontal">
+            <Button Content="导出" Command="{Binding ExportCommand}"></Button>
+        </StackPanel>
+    </Grid>
+</Window>

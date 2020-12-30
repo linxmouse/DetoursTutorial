@@ -1,3 +1,6 @@
+国外GH大神
+https://guidedhacking.com/
+
 判断窗口是否为全屏
 Windowed = ((GetWindowLongPtr(GetForegroundWindow(), GWL_STYLE) & WS_POPUP) != 0) ? false : true;
 

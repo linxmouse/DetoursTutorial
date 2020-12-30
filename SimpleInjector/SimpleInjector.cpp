@@ -132,6 +132,8 @@ BOOL UseOpen(DWORD pid, TCHAR* dllPath)
 	if (module == NULL)
 	{
 		printf("加载的Dll未执行或加载Dll失败\n");
+		CloseHandle(hThread);
+		CloseHandle(hProcess);
 		return FALSE;
 	}
 

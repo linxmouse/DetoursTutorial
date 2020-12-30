@@ -8,7 +8,7 @@
 #include <detours/detours.h>
 #include <io.h>
 
-BOOL Inject(TCHAR* exePath, char* dllPath)
+HANDLE Inject(TCHAR* exePath, char* dllPath)
 {
 	TCHAR dir[_MAX_DIR]{ 0 };
 	TCHAR drive[_MAX_DRIVE]{ 0 };
@@ -28,56 +28,74 @@ BOOL Inject(TCHAR* exePath, char* dllPath)
 	STARTUPINFO sinfo{ 0 };
 	PROCESS_INFORMATION pinfo{ 0 };
 	sinfo.cb = sizeof(sinfo);
-	return  DetourCreateProcessWithDllEx(NULL, exePath, NULL, NULL, FALSE, CREATE_DEFAULT_ERROR_MODE, NULL,
-		_dir, &sinfo, &pinfo, dllPath, (PDETOUR_CREATE_PROCESS_ROUTINEW)CreateProcess);
-	//return  DetourCreateProcessWithDllEx(NULL, exePath, NULL, NULL, FALSE, CREATE_DEFAULT_ERROR_MODE, NULL,
-	//	_dir, &sinfo, &pinfo, dllPath, NULL);
+	if (!DetourCreateProcessWithDllEx(NULL, exePath, NULL, NULL, FALSE,
+		CREATE_DEFAULT_ERROR_MODE | CREATE_SUSPENDED, NULL,
+		_dir, &sinfo, &pinfo, dllPath, NULL))
+	{
+		printf("DetourCreateProcessWithDellEx失败，错误代码：%u\n", GetLastError());
+		return NULL;
+	}
+
+	ResumeThread(pinfo.hThread);
+	CloseHandle(pinfo.hThread);
+
+	return pinfo.hProcess;
 }
 
 int main(int argc, char* argv[])
 {
+	BOOL NoError = TRUE;
+
 	if (argc != 3)
 	{
+		printf("argc = %d\n", argc);
+		for (int i = 0; i < argc; i++)
+		{
+			printf("arg %d : %s\n", i, argv[i]);
+		}
 		printf("用法:\nDetoursInjector exe dll\n");
-		return 0;
+		NoError = FALSE;
 	}
-
-	BOOL NoError = TRUE;
-	TCHAR argv1[MAX_PATH]{ 0 };
+	else
+	{
+		TCHAR argv1[MAX_PATH]{ 0 };
 #ifdef _UNICODE
-	size_t len = strlen(argv[1]);
-	MultiByteToWideChar(CP_ACP, 0, argv[1], (int)len, argv1, (int)len);
+		size_t len = strlen(argv[1]);
+		MultiByteToWideChar(CP_ACP, 0, argv[1], (int)len, argv1, (int)len);
 
-	// 判断Dll文件是否存在
-	if (_access(argv[2], 0) == -1)
-	{
-		printf("Dll文件不存在\n");
-		NoError = FALSE;
-	}
-
-	if (NoError)
-	{
-		if (!Inject(argv1, argv[2]))
+		// 判断Dll文件是否存在
+		if (_access(argv[2], 0) == -1)
 		{
-			printf("Inject失败，错误代码：%u\n", GetLastError());
+			printf("Dll文件不存在\n");
+			NoError = FALSE;
 		}
-	}
+
+		if (NoError)
+		{
+			if (Inject(argv1, argv[2]) == INVALID_HANDLE_VALUE)
+			{
+				NoError = FALSE;
+				printf("Inject失败，错误代码：%u\n", GetLastError());
+			}
+		}
 #else
-	// 判断Dll文件是否存在
-	if (_taccess(argv[2], 0) == -1)
-	{
-		printf("Dll文件不存在\n");
-		NoError = FALSE;
-	}
-
-	if (NoError)
-	{
-		if (!Inject(argv[1], argv[2]))
+		// 判断Dll文件是否存在
+		if (_taccess(argv[2], 0) == -1)
 		{
-			printf("Inject失败，错误代码：%u\n", GetLastError());
+			printf("Dll文件不存在\n");
+			NoError = FALSE;
 		}
+
+		if (NoError)
+		{
+			if (Inject(argv[1], argv[2]) == INVALID_HANDLE_VALUE)
+			{
+				NoError = FALSE;
+				printf("Inject失败，错误代码：%u\n", GetLastError());
+			}
+		}
+#endif // _UNICODE 
 	}
-#endif // _UNICODE
 
 	printf("Press Escape To Exit...\n");
 	while (true)

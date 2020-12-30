@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ChkDxVerGUI": {
+      "commandName": "Project",
+      "workingDirectory": "../Debug"
+    }
+  }
+}
