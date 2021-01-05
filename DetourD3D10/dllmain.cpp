@@ -163,7 +163,8 @@ DWORD WINAPI MainThread(LPVOID arg)
 		return FALSE;
 	}
 
-	void** pSwapChainVtbl = *reinterpret_cast<void***>(swapChain);
+	//void** pSwapChainVtbl = *reinterpret_cast<void***>(swapChain);
+	void** pSwapChainVtbl = *(void***)(swapChain);
 	TruePresent = (PF_Present)pSwapChainVtbl[8];
 
 	swapChain->Release();

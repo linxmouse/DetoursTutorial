@@ -21,11 +21,11 @@ double hkAdd(double a, double b)
 
 int main()
 {
-    //DETOURS(targetPtr, hkAdd);
-    auto pd = new Detour(targetPtr, hkAdd);
+    DETOURS(targetPtr, hkAdd);
+    //auto pd = new Detour(targetPtr, hkAdd);
     std::cout << "1 + 1 = " << Add(1, 1) << std::endl;
     std::cout << "...Now Restore" << std::endl;
-    delete pd;
+    //delete pd;
     std::cout << "1 + 1 = " << Add(1, 1) << std::endl;
 
     std::cout << "Press Escape To Exit..." << std::endl;

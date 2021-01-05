@@ -230,3 +230,126 @@ ID3D11DeviceContext::$vftable@:
 112	| &ID3D11DeviceContext::GetType
 113	| &ID3D11DeviceContext::GetContextFlags
 114	| &ID3D11DeviceContext::FinishCommandList
+
+IDirect3DDevice9::$vftable@:
+	| &IDirect3DDevice9_meta
+	|  0
+ 0	| &IDirect3DDevice9::QueryInterface
+ 1	| &IDirect3DDevice9::AddRef
+ 2	| &IDirect3DDevice9::Release
+ 3	| &IDirect3DDevice9::TestCooperativeLevel
+ 4	| &IDirect3DDevice9::GetAvailableTextureMem
+ 5	| &IDirect3DDevice9::EvictManagedResources
+ 6	| &IDirect3DDevice9::GetDirect3D
+ 7	| &IDirect3DDevice9::GetDeviceCaps
+ 8	| &IDirect3DDevice9::GetDisplayMode
+ 9	| &IDirect3DDevice9::GetCreationParameters
+10	| &IDirect3DDevice9::SetCursorProperties
+11	| &IDirect3DDevice9::SetCursorPosition
+12	| &IDirect3DDevice9::ShowCursor
+13	| &IDirect3DDevice9::CreateAdditionalSwapChain
+14	| &IDirect3DDevice9::GetSwapChain
+15	| &IDirect3DDevice9::GetNumberOfSwapChains
+16	| &IDirect3DDevice9::Reset
+17	| &IDirect3DDevice9::Present
+18	| &IDirect3DDevice9::GetBackBuffer
+19	| &IDirect3DDevice9::GetRasterStatus
+20	| &IDirect3DDevice9::SetDialogBoxMode
+21	| &IDirect3DDevice9::SetGammaRamp
+22	| &IDirect3DDevice9::GetGammaRamp
+23	| &IDirect3DDevice9::CreateTexture
+24	| &IDirect3DDevice9::CreateVolumeTexture
+25	| &IDirect3DDevice9::CreateCubeTexture
+26	| &IDirect3DDevice9::CreateVertexBuffer
+27	| &IDirect3DDevice9::CreateIndexBuffer
+28	| &IDirect3DDevice9::CreateRenderTarget
+29	| &IDirect3DDevice9::CreateDepthStencilSurface
+30	| &IDirect3DDevice9::UpdateSurface
+31	| &IDirect3DDevice9::UpdateTexture
+32	| &IDirect3DDevice9::GetRenderTargetData
+33	| &IDirect3DDevice9::GetFrontBufferData
+34	| &IDirect3DDevice9::StretchRect
+35	| &IDirect3DDevice9::ColorFill
+36	| &IDirect3DDevice9::CreateOffscreenPlainSurface
+37	| &IDirect3DDevice9::SetRenderTarget
+38	| &IDirect3DDevice9::GetRenderTarget
+39	| &IDirect3DDevice9::SetDepthStencilSurface
+40	| &IDirect3DDevice9::GetDepthStencilSurface
+41	| &IDirect3DDevice9::BeginScene
+42	| &IDirect3DDevice9::EndScene
+43	| &IDirect3DDevice9::Clear
+44	| &IDirect3DDevice9::SetTransform
+45	| &IDirect3DDevice9::GetTransform
+46	| &IDirect3DDevice9::MultiplyTransform
+47	| &IDirect3DDevice9::SetViewport
+48	| &IDirect3DDevice9::GetViewport
+49	| &IDirect3DDevice9::SetMaterial
+50	| &IDirect3DDevice9::GetMaterial
+51	| &IDirect3DDevice9::SetLight
+52	| &IDirect3DDevice9::GetLight
+53	| &IDirect3DDevice9::LightEnable
+54	| &IDirect3DDevice9::GetLightEnable
+55	| &IDirect3DDevice9::SetClipPlane
+56	| &IDirect3DDevice9::GetClipPlane
+57	| &IDirect3DDevice9::SetRenderState
+58	| &IDirect3DDevice9::GetRenderState
+59	| &IDirect3DDevice9::CreateStateBlock
+60	| &IDirect3DDevice9::BeginStateBlock
+61	| &IDirect3DDevice9::EndStateBlock
+62	| &IDirect3DDevice9::SetClipStatus
+63	| &IDirect3DDevice9::GetClipStatus
+64	| &IDirect3DDevice9::GetTexture
+65	| &IDirect3DDevice9::SetTexture
+66	| &IDirect3DDevice9::GetTextureStageState
+67	| &IDirect3DDevice9::SetTextureStageState
+68	| &IDirect3DDevice9::GetSamplerState
+69	| &IDirect3DDevice9::SetSamplerState
+70	| &IDirect3DDevice9::ValidateDevice
+71	| &IDirect3DDevice9::SetPaletteEntries
+72	| &IDirect3DDevice9::GetPaletteEntries
+73	| &IDirect3DDevice9::SetCurrentTexturePalette
+74	| &IDirect3DDevice9::GetCurrentTexturePalette
+75	| &IDirect3DDevice9::SetScissorRect
+76	| &IDirect3DDevice9::GetScissorRect
+77	| &IDirect3DDevice9::SetSoftwareVertexProcessing
+78	| &IDirect3DDevice9::GetSoftwareVertexProcessing
+79	| &IDirect3DDevice9::SetNPatchMode
+80	| &IDirect3DDevice9::GetNPatchMode
+81	| &IDirect3DDevice9::DrawPrimitive
+82	| &IDirect3DDevice9::DrawIndexedPrimitive
+83	| &IDirect3DDevice9::DrawPrimitiveUP
+84	| &IDirect3DDevice9::DrawIndexedPrimitiveUP
+85	| &IDirect3DDevice9::ProcessVertices
+86	| &IDirect3DDevice9::CreateVertexDeclaration
+87	| &IDirect3DDevice9::SetVertexDeclaration
+88	| &IDirect3DDevice9::GetVertexDeclaration
+89	| &IDirect3DDevice9::SetFVF
+90	| &IDirect3DDevice9::GetFVF
+91	| &IDirect3DDevice9::CreateVertexShader
+92	| &IDirect3DDevice9::SetVertexShader
+93	| &IDirect3DDevice9::GetVertexShader
+94	| &IDirect3DDevice9::SetVertexShaderConstantF
+95	| &IDirect3DDevice9::GetVertexShaderConstantF
+96	| &IDirect3DDevice9::SetVertexShaderConstantI
+97	| &IDirect3DDevice9::GetVertexShaderConstantI
+98	| &IDirect3DDevice9::SetVertexShaderConstantB
+99	| &IDirect3DDevice9::GetVertexShaderConstantB
+100	| &IDirect3DDevice9::SetStreamSource
+101	| &IDirect3DDevice9::GetStreamSource
+102	| &IDirect3DDevice9::SetStreamSourceFreq
+103	| &IDirect3DDevice9::GetStreamSourceFreq
+104	| &IDirect3DDevice9::SetIndices
+105	| &IDirect3DDevice9::GetIndices
+106	| &IDirect3DDevice9::CreatePixelShader
+107	| &IDirect3DDevice9::SetPixelShader
+108	| &IDirect3DDevice9::GetPixelShader
+109	| &IDirect3DDevice9::SetPixelShaderConstantF
+110	| &IDirect3DDevice9::GetPixelShaderConstantF
+111	| &IDirect3DDevice9::SetPixelShaderConstantI
+112	| &IDirect3DDevice9::GetPixelShaderConstantI
+113	| &IDirect3DDevice9::SetPixelShaderConstantB
+114	| &IDirect3DDevice9::GetPixelShaderConstantB
+115	| &IDirect3DDevice9::DrawRectPatch
+116	| &IDirect3DDevice9::DrawTriPatch
+117	| &IDirect3DDevice9::DeletePatch
+118	| &IDirect3DDevice9::CreateQuery

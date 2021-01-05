@@ -9,5 +9,5 @@ public:
 	~Detour();
 };
 
-#define DETOURS(src, dest) Detour instance(src, dest)
+#define DETOURS(src, dest) Detour instance{##src, ##dest}
 

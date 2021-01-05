@@ -67,52 +67,75 @@ DWORD WINAPI Main(LPVOID arg)
 	HMODULE dx10_1 = NULL;
 	HMODULE dx11 = NULL;
 	HMODULE dx11_1 = NULL;
+	HMODULE ogl = NULL;
+	HMODULE vulkan = NULL;
 
 	int Retry = 0;
 	BOOL error = FALSE;
 	char msg[512]{ 0 };
-	while (!dx9 && !dx10 && !dx10_1 && !dx11 && !dx11_1)
+	while (!dx9 && !dx10 && !dx10_1 && !dx11 && !dx11_1 && !ogl && !vulkan)
 	{
 		GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, _T("d3d9.dll"), &dx9);
 		GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, _T("d3d10.dll"), &dx10);
 		GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, _T("d3d10_1.dll"), &dx10_1);
 		GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, _T("d3d11.dll"), &dx11);
 		GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, _T("d3d11_1.dll"), &dx11_1);
+		GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, _T("opengl32.dll"), &ogl);
+		GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, _T("vulkan-1.dll"), &vulkan);
 
 		if (dx9 != NULL)
 		{
 			printf("Dirext 9 Detected\n");
 			if (strlen(msg) == 0) strcat_s(msg, "Dx9");
 			else strcat_s(msg, ", Dx9");
+			CloseHandle(dx9);
 		}
 		if (dx10 != NULL)
 		{
 			printf("Dirext 10 Detected\n");
 			if (strlen(msg) == 0) strcat_s(msg, "Dx10");
 			else strcat_s(msg, ", Dx10");
+			CloseHandle(dx10);
 		}
 		if (dx10_1 != NULL)
 		{
 			printf("Dirext 10.1 Detected\n");
 			if (strlen(msg) == 0) strcat_s(msg, "Dx10.1");
 			else strcat_s(msg, ", Dx10.1");
+			CloseHandle(dx10_1);
 		}
 		if (dx11 != NULL)
 		{
 			printf("Dirext 11 Detected\n");
 			if (strlen(msg) == 0) strcat_s(msg, "Dx11");
 			else strcat_s(msg, ", Dx11");
+			CloseHandle(dx11);
 		}
 		if (dx11_1 != NULL)
 		{
 			printf("Dirext 11.1 Detected\n");
 			if (strlen(msg) == 0) strcat_s(msg, "Dx11.1");
 			else strcat_s(msg, ", Dx11.1");
+			CloseHandle(dx11_1);
+		}
+		if (ogl != NULL)
+		{
+			printf("OpenGL Detected\n");
+			if (strlen(msg) == 0) strcat_s(msg, "OpenGL");
+			else strcat_s(msg, ", OpenGL");
+			CloseHandle(ogl);
+		}
+		if (vulkan != NULL)
+		{
+			printf("Vulkan Detected\n");
+			if (strlen(msg) == 0) strcat_s(msg, "Vulkan");
+			else strcat_s(msg, ", Vulkan");
+			CloseHandle(vulkan);
 		}
 
 		Sleep(500);
 		Retry++;
-		if (Retry * 500 > 5000)
+		if (Retry * 500 > 15000)
 		{
 			error = TRUE;
 			printf("Unsupported Direct3D version, or Direct3D DLL not loaded within 5 seconds.\n");
@@ -121,6 +144,11 @@ DWORD WINAPI Main(LPVOID arg)
 	}
 
 	if (!error) WriteFile(hPipe, msg, strlen(msg), NULL, NULL);
+	else 
+	{
+		strcat_s(msg, "Unsupported Graphic Type");
+		WriteFile(hPipe, msg, strlen(msg), NULL, NULL);
+	}
 
 	ClosePipe(hPipe);
 	if (!TerminateProcess(GetCurrentProcess(), 0))
